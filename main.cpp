@@ -86,15 +86,7 @@ public:
     }
     // Add a new product to the inventory
 
-	//void addProduct(){
-//		int id;
-		//string name;
-		//double price;
-		//int quantity;
-//getProductDetails(id,name,price,quantity);
-//Product newProduct = new Product(id,name,pric,quantity);
-//Node* newNode = new Node(newProduct);
-//if(head ==n
+
 
     void addProduct(int id, string name, double price, int quantity)
     {
