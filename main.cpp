@@ -244,7 +244,7 @@ public:
     }
 };
 
-class SalesList : public Inventory{
+class SalesList : public Inventory{ //SalesList as a derived class from the Inventory class.
 	public:
 		void printProfit(){
 
