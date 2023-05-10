@@ -85,6 +85,17 @@ public:
         tail = nullptr;
     }
     // Add a new product to the inventory
+
+	//void addProduct(){
+//		int id;
+		//string name;
+		//double price;
+		//int quantity;
+//getProductDetails(id,name,price,quantity);
+//Product newProduct = new Product(id,name,pric,quantity);
+//Node* newNode = new Node(newProduct);
+//if(head ==n
+
     void addProduct(int id, string name, double price, int quantity)
     {
         Product *newProduct = new Product(id, name, price, quantity);
@@ -103,7 +114,7 @@ public:
     }
 
     // Remove a product from the inventory
-    void removeProduct(int id)
+    void removeProduct(int id) //void removeProduct(Node* remove)
     {
         if (head == nullptr)
         {
@@ -158,7 +169,7 @@ public:
         }
         else
         {
-            Product *current = head;
+            Product *current = head;//Node* current = head;
             while (current != nullptr)
             {
                 current->print();
@@ -176,7 +187,7 @@ public:
         }
         else
         {
-            Product *current = head;
+            Product *current = head; //Node* current = head
             while (current != nullptr && current->id != id)
             {
                 current = current->next;
@@ -201,7 +212,7 @@ public:
         }
         else
         {
-            Product *current = head;
+            Product *current = head; //Node* current = head
             while (current != nullptr && current->id != id)
             {
                 current = current->next;
@@ -220,7 +231,7 @@ public:
     // Search for a product by ID
     void searchProduct(int id)
     {
-        Product *current = head;
+        Product *current = head; //Node* current = head
         while (current != nullptr && current->id != id)
         {
             current = current->next;
@@ -240,6 +251,14 @@ public:
         }
     }
 };
+
+class SalesList : public Inventory{
+	public:
+		void printProfit(){
+
+	}
+		void 
+}
 
 int getMenuChoice()
 {
