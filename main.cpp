@@ -47,15 +47,37 @@ public:
         cout << right << setw(5) << fixed << setprecision(2) << "$" << price << "\t";
         cout << right << setw(8) << quantity << endl;
     }
+	
+};
+
+class Node
+{
+public: 
+	Node* next;
+	Node* prev;
+	Product product;
+	
+	Node(Product newProduct){
+		product = newProduct;
+		prev = nullptr;
+		next = nullptr;
+	}
+//Node* setNext(Product input){
+//	(*this).next = input;
+//}
+//Node* setPrev 
+//Node* getNext
+//Node* getPrev
 };
 
 // Inventory class manages the list of products using a linked list
 class Inventory
 {
 private:
-    Product *head;
+    Product *head; 
     Product *tail;
-
+//Node* head;
+//Node* tail;
 public:
     Inventory()
     {
@@ -66,16 +88,17 @@ public:
     void addProduct(int id, string name, double price, int quantity)
     {
         Product *newProduct = new Product(id, name, price, quantity);
+		//Node* newNode = new Node(newProduct); create a Node using the product 
         if (head == nullptr)
         {
-            head = newProduct;
-            tail = newProduct;
+            head = newProduct; //head = newNode
+            tail = newProduct;	//tail = newNode
         }
         else
         {
-            tail->next = newProduct;
-            newProduct->prev = tail;
-            tail = newProduct;
+            tail->next = newProduct; //tail.setNext = newNode
+            newProduct->prev = tail; //newNode.setNext = tail
+            tail = newProduct; //tail = newNode
         }
     }
 
@@ -88,7 +111,7 @@ public:
         }
         else
         {
-            Product *current = head;
+            Product *current = head; //Node* current = head
             while (current != nullptr && current->id != id)
             {
                 current = current->next;
@@ -164,7 +187,7 @@ public:
             }
             else
             {
-                current->price = newPrice;
+                current->price = newPrice; //current->product->price = newPrice;
                 cout << "Price updated successfully.\n";
             }
         }
