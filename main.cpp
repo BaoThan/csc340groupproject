@@ -85,7 +85,7 @@ public:
         tail = nullptr;
     }
     // Add a new product to the inventory
-
+	//void addProduct(Node* addNode)
 
 
     void addProduct(int id, string name, double price, int quantity)
@@ -221,7 +221,7 @@ public:
         }
     }
     // Search for a product by ID
-    void searchProduct(int id)
+    void searchProduct(int id) //Node* searchProduct(int id)
     {
         Product *current = head; //Node* current = head
         while (current != nullptr && current->id != id)
@@ -321,7 +321,9 @@ void searchProduct(Inventory &inventory)
     int searchId;
     cout << "Enter product ID: ";
     cin >> searchId;
+	//Node* searchNode = searchProduct(searchId);
     inventory.searchProduct(searchId);
+	//inventory.addProduct(searchNode);
 }
 
 // Main function
