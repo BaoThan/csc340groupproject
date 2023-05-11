@@ -21,24 +21,23 @@ void printMenu()
 class Product
 {
 public:
-    string name;
+   string name;
     int id;
     double price;
     int quantity;
-    Product *prev;
-    Product *next;
+	
+    Product() { //default constructor
+        name = "";
+        id = 0000;
+        price = 0;
 
-    Product(int id, string name, double price, int quantity)
-    {
+    }
+    Product(int id, string name, double price, int quantity) {
         this->id = id;
         this->name = name;
         this->price = price;
         this->quantity = quantity;
-
-        prev = nullptr;
-        next = nullptr;
     }
-
     // Print each product details
     void print()
     {
@@ -53,31 +52,38 @@ public:
 class Node
 {
 public: 
-	Node* next;
-	Node* prev;
-	Product product;
+     Node* next;
+     Node* prev;
+     Product product;
 	
-	Node(Product newProduct){
-		product = newProduct;
-		prev = nullptr;
-		next = nullptr;
-	}
-//Node* setNext(Product input){
-//	(*this).next = input;
-//}
-//Node* setPrev 
-//Node* getNext
-//Node* getPrev
+     Node(Product newProduct){
+	   product = newProduct;
+	   prev = nullptr;
+           next = nullptr;
+     }
+     void print() {
+           product.print();
+      }
+    void setNext(Node* newNode) {
+        (*this).next = newNode;
+    }
+    Node* getNext() {
+        return (*this).next;
+    }
+    void setPrev(Node* newNode) {
+        (*this).prev = newNode;
+    }
+    Node* getPrev() {
+        return (*this).prev;
+    }
 };
 
 // Inventory class manages the list of products using a linked list
 class Inventory
 {
 private:
-    Product *head; 
-    Product *tail;
-//Node* head;
-//Node* tail;
+Node* head;
+Node* tail;
 public:
     Inventory()
     {
@@ -90,18 +96,18 @@ public:
 
     void addProduct(int id, string name, double price, int quantity)
     {
-        Product *newProduct = new Product(id, name, price, quantity);
-		//Node* newNode = new Node(newProduct); create a Node using the product 
+        Product *newProduct = Product(id, name, price, quantity);
+	Node* newNode = new Node(newProduct); //create a Node using the product 
         if (head == nullptr)
         {
-            head = newProduct; //head = newNode
-            tail = newProduct;	//tail = newNode
+            head = newNode
+            tail = newNode
         }
         else
         {
-            tail->next = newProduct; //tail.setNext = newNode
-            newProduct->prev = tail; //newNode.setNext = tail
-            tail = newProduct; //tail = newNode
+            tail_>setNext(newNode);
+            newNode->setPrev(tail);
+            tail = newNode
         }
     }
 
