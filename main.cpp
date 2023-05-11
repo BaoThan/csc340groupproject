@@ -112,7 +112,7 @@ public:
     }
 
     // Remove a product from the inventory
-    void removeProduct(int id) //void removeProduct(Node* remove)
+    void removeProduct(Node* remove)
     {
         if (head == nullptr)
         {
@@ -120,7 +120,7 @@ public:
         }
         else
         {
-            Product *current = head; //Node* current = head
+            Node* current = head
             while (current != nullptr && current->id != id)
             {
                 current = current->next;
@@ -227,9 +227,9 @@ public:
         }
     }
     // Search for a product by ID
-    void searchProduct(int id) //Node* searchProduct(int id)
+    Node* searchProduct(int id)
     {
-        Product *current = head; //Node* current = head
+        Node* current = head
         while (current != nullptr && current->id != id)
         {
             current = current->next;
