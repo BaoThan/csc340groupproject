@@ -112,40 +112,26 @@ public:
     }
 
     // Remove a product from the inventory
-    void removeProduct(Node* remove)
-    {
-        if (head == nullptr)
-        {
-            cout << "Inventory is empty.\n";
-        }
-        else
-        {
-            Node* current = head
-            while (current != nullptr && current->id != id)
-            {
-                current = current->next;
+    
+    void removeProduct(Node* deleteNode) {
+        if (head == nullptr) cout << "Inventory is empty";
+        else {
+            Node* current = head;
+            while (current != deleteNode) {
+                current = current->getNext();
             }
-            if (current == nullptr)
-            {
-                cout << "Product not found.\n";
-            }
-            else
-            {
-                if (current == head)
-                {
-                    head = current->next;
-                    if (head != nullptr)
-                    {
-                        head->prev = nullptr;
-                    }
+
+            if (current == nullptr) cout << "Product not found";
+
+            else {
+                if (current == head) {
+                    head = head->getNext();
                 }
-                else if (current == tail)
-                {
-                    tail = current->prev;
-                    tail->next = nullptr;
+                else if (current == tail) {
+                    tail = current->getPrev();
+                    tail->setNext(nullptr);
                 }
-                else
-                {
+                else {
                     current->prev->next = current->next;
                     current->next->prev = current->prev;
                 }
@@ -227,26 +213,19 @@ public:
         }
     }
     // Search for a product by ID
-    Node* searchProduct(int id)
-    {
-        Node* current = head
-        while (current != nullptr && current->id != id)
-        {
+	
+     Node* searchProduct(int id) {
+        Node* current = head;
+        while (current->next != nullptr && current->getID() != id) {
+
             current = current->next;
         }
+        if (current == nullptr) return nullptr;
 
-        if (current == nullptr)
-        {
-            cout << "Product not found.\n";
-        }
-        else
-        {
-            cout << left << setw(8) << " ID" << setw(35) << "Name" << setw(16) << "Price"
-                 << "Quantity" << endl;
-            cout << "__________________________________________________________________\n\n";
+        else {
+            return current;
+	}  
 
-            current->print();
-        }
     }
 };
 
@@ -296,7 +275,12 @@ void removeProduct(Inventory &inventory)
     int removeId;
     cout << "Enter product ID to remove: ";
     cin >> removeId;
-    inventory.removeProduct(removeId);
+    Node* removeNode = inventory.searchProduct(removeId)
+    if(removeNode == nullptr) cout << "Item not found";
+    else{
+	cout << "DELETED";
+    	inventory.removeProduct(removeId);
+    }
 }
 
 // Function to handle the "Update price" menu option
@@ -327,9 +311,11 @@ void searchProduct(Inventory &inventory)
     int searchId;
     cout << "Enter product ID: ";
     cin >> searchId;
-	//Node* searchNode = searchProduct(searchId);
-    inventory.searchProduct(searchId);
-	//inventory.addProduct(searchNode);
+    Node* searchNode = inventory.searchProduct(searchId);
+    if(searchNode != nullptr) cout << "Item not found"<<endl;
+    else{
+	    searchNode->print();
+    }
 }
 
 // Main function
