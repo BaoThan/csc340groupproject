@@ -76,7 +76,7 @@ class Node {
     
 };
 
-class Inventory {
+class Inventory { //linked list of Products
 private:
     Node* head;
     Node* tail;
@@ -167,6 +167,13 @@ public:
         changeNode->product.quantity = newQuantity;
     }
 
+	void calculateTotal(){ //calculate total in the inventory (total per aisle)
+		while(current->next != nullptr){
+				totalRevenue+= revenue;
+				totalCost += cost;
+				totalProfit += profit;
+		}
+}
     
 };
 void printMenu()
@@ -282,9 +289,11 @@ int main()
     int id;
     double price;
     int quantity;
-    //if file exist open file
-// file doesnt exit create new file
+
+//if file exist open file
+//file doesnt exit create new file
 //file exist and can't open, error output
+
     ifstream inFile;
     inFile.open("TextFile1.txt");
     if (!inFile)
@@ -299,6 +308,11 @@ int main()
         string line;
 
         // read each line of the CSV file
+//Inventory Electronics;
+//Inventory Groceries;
+//Inventory Furnitures;
+//Inventory Clothes;
+
         while (getline(inFile, line))
         {
             stringstream ss(line);
