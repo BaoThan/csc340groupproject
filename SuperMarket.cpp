@@ -167,13 +167,13 @@ public:
         changeNode->product.quantity = newQuantity;
     }
 
-	void calculateTotal(){ //calculate total in the inventory (total per aisle)
-		while(current->next != nullptr){
-				totalRevenue+= revenue;
-				totalCost += cost;
-				totalProfit += profit;
-		}
-}
+	//void calculateTotal(){ //calculate total in the inventory (total per aisle)
+		//while(current->next != nullptr){
+				//totalRevenue+= revenue;
+			//	totalCost += cost;
+				//totalProfit += profit;
+		//}
+//}
     
 };
 void printMenu()
