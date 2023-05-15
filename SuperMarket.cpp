@@ -282,7 +282,9 @@ int main()
     int id;
     double price;
     int quantity;
-    
+    //if file exist open file
+// file doesnt exit create new file
+//file exist and can't open, error output
     ifstream inFile;
     inFile.open("TextFile1.txt");
     if (!inFile)
