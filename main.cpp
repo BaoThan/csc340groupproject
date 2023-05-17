@@ -8,14 +8,16 @@
 #include <cctype>
 #include <ctime>
 #include <chrono>
+#include <unordered_set>
 #include <vector>
+#include <filesystem>
 using namespace std;
 
 class Product
 {
 public:
     string name;
-    double price;
+    double price, cost;
     int quantity;
     string category;
     string expDate;
@@ -24,15 +26,17 @@ public:
     {
         name = "";
         price = 0;
+        cost = 0;
         quantity = 0;
         category = "";
         expDate = "N/A";
     }
 
-    Product(string name, double price, int quantity, string category, string expDate)
+    Product(string name, double price, double cost, int quantity, string category, string expDate)
     {
         this->name = name;
         this->price = price;
+        this->cost = cost;
         this->quantity = quantity;
         this->category = category;
         this->expDate = expDate;
@@ -143,7 +147,7 @@ public:
         }
 
         // Write the header line
-        outFile << "Name,Price,Quantity,Category,Expiration Date" << endl;
+        outFile << "Name,Price,Cost,Quantity,Category,Expiration Date" << endl;
 
         // Write each product to the file
         Node *current = head;
@@ -152,6 +156,7 @@ public:
             Product product = current->product;
             outFile << product.name << ","
                     << product.price << ","
+                    << product.cost << ","
                     << product.quantity << ","
                     << product.category << ","
                     << product.expDate << endl;
@@ -190,9 +195,9 @@ public:
         }
     }
 
-    void addProduct(string name, double price, int quantity, string category, string expDate)
+    void addProduct(string name, double price, double cost, int quantity, string category, string expDate)
     {
-        Product newProduct = Product(name, price, quantity, category, expDate);
+        Product newProduct = Product(name, price, cost, quantity, category, expDate);
         Node *newNode = new Node(newProduct);
 
         if (head == nullptr)
@@ -288,110 +293,177 @@ public:
     {
         changeNode->product.quantity = newQuantity;
     }
+    void sortByCategory()
+    {
+        if (head == nullptr || head->next == nullptr)
+        {
+            return; // Nothing to sort if the inventory is empty or has only one node
+        }
+
+        bool sorted;
+        Node *current;
+        Node *last = nullptr;
+
+        do
+        {
+            sorted = true;
+            current = head;
+
+            while (current->next != last)
+            {
+                if (current->product.category > current->next->product.category)
+                {
+                    swapNodes(current, current->next);
+                    sorted = false;
+                }
+
+                current = current->next;
+            }
+
+            last = current;
+        } while (!sorted);
+    }
+
+    void sortByExpirationDate()
+    {
+        if (head == nullptr || head->next == nullptr)
+        {
+            return; // Nothing to sort if the inventory is empty or has only one node
+        }
+
+        bool sorted;
+        Node *current;
+        Node *last = nullptr;
+
+        do
+        {
+            sorted = true;
+            current = head;
+
+            while (current->next != last)
+            {
+                if (current->product.expDate != "N/A" && current->next->product.expDate != "N/A" &&
+                    compareExpirationDate(current->product.expDate, current->next->product.expDate) > 0)
+                {
+                    swapNodes(current, current->next);
+                    sorted = false;
+                }
+
+                current = current->next;
+            }
+
+            last = current;
+        } while (!sorted);
+
+        // Display the sorted products with expiration date
+        cout << "\nSorted Products with Expiration Date:\n";
+        for (current = head; current != nullptr; current = current->getNext())
+        {
+            if (current->product.expDate != "")
+            {
+                current->print();
+            }
+        }
+        cout << endl;
+    }
+
+private:
+    void swapNodes(Node *node1, Node *node2)
+    {
+        Product temp = node1->product;
+        node1->product = node2->product;
+        node2->product = temp;
+    }
+
+    int compareExpirationDate(const string &date1, const string &date2)
+    {
+        // Assuming the date format is "YYYY-MM-DD"
+        int year1, month1, day1;
+        int year2, month2, day2;
+
+        sscanf(date1.c_str(), "%d-%d-%d", &year1, &month1, &day1);
+        sscanf(date2.c_str(), "%d-%d-%d", &year2, &month2, &day2);
+
+        if (year1 != year2)
+        {
+            return year1 - year2;
+        }
+        if (month1 != month2)
+        {
+            return month1 - month2;
+        }
+        return day1 - day2;
+    }
 };
 
-void printMenu()
+void displayProductsByCategoryMenu(Inventory &inventory)
 {
-    cout << "Welcome to Supermarket Inventory Manager\n\n";
-    cout << "1. Display inventory\n";
-    cout << "2. Add product\n";
-    cout << "3. Remove product\n";
-    cout << "4. Update price\n";
-    cout << "5. Update quantity\n";
-    cout << "6. Search product\n";
-    cout << "7. Display categories\n";
-    cout << "8. Shuffle the inventory\n";
-    cout << "9. Write inventory to file\n";
-    cout << "10. Filter expired Products and export to file\n";
-    cout << "0. Quit\n";
-}
-
-void printCategoryMenu()
-{
-    cout << "Categories:\n";
-    cout << " 0. <  Go back to previous menu\n";
-    cout << " 1. Fruit" << setw(30) << " 8. Beverage\n";
-    cout << " 2. Car Accessories" << setw(19) << " 9. Fitness\n";
-    cout << " 3. Electronics" << setw(22) << "10. Shoes\n";
-    cout << " 4. Sports" << setw(36) << "11. Home & Kitchen\n";
-    cout << " 5. Accessories" << setw(25) << "12. Clothing\n";
-    cout << " 6. Outdoor" << setw(27) << "13. Travel\n";
-    cout << " 7. Books" << setw(36) << "14. Personal Care\n";
-}
-
-void displayProductsByCategory(const int categoryChoice, Inventory &inventory)
-{
-    string category;
-    switch (categoryChoice)
+    while (true)
     {
-    case 1:
-        category = "Fruit";
-        break;
-    case 2:
-        category = "Car Accessories";
-        break;
-    case 3:
-        category = "Electronics";
-        break;
-    case 4:
-        category = "Sports";
-        break;
-    case 5:
-        category = "Accessories";
-        break;
-    case 6:
-        category = "Outdoor";
-        break;
-    case 7:
-        category = "Books";
-        break;
-    case 8:
-        category = "Beverage";
-        break;
-    case 9:
-        category = "Fitness";
-        break;
-    case 10:
-        category = "Shoes";
-        break;
-    case 11:
-        category = "Home & Kitchen";
-        break;
-    case 12:
-        category = "Clothing";
-        break;
-    case 13:
-        category = "Travel";
-        break;
-    case 14:
-        category = "Personal Care";
-        break;
-    default:
-        cout << "Invalid category choice.\n";
-        return;
-    }
+        cout << "Categories:\n";
+        cout << " 0. <  Go back to the previous menu\n";
+        cout << " 1. Show All.\n";
 
-    cout << "\nDisplaying products in the category: " << category << "\n\n";
-    cout << left << setw(30) << "Name" << setw(17) << "Price" << setw(15) << "Quantity"
-         << "Category" << endl;
-    cout << endl;
-
-    Node *current = inventory.getHead();
-    bool found = false;
-    while (current != nullptr)
-    {
-        if (current->product.category == category)
+        unordered_set<string> categories;
+        Node *current = inventory.getHead();
+        while (current != nullptr)
         {
-            current->print();
-            found = true;
+            categories.insert(current->product.category);
+            current = current->getNext();
         }
-        current = current->getNext();
+
+        int option = 2;
+        vector<string> categoryOptions;
+        for (const auto &category : categories)
+        {
+            categoryOptions.push_back(category);
+            cout << " " << option << ". " << category << endl;
+            option++;
+        }
+
+        int categoryChoice;
+        cout << "\nEnter the category number: ";
+        cin >> categoryChoice;
+
+        if (categoryChoice == 0)
+            return;
+
+        if (categoryChoice == 1)
+        {
+            inventory.displayProducts();
+            continue;
+        }
+
+        if (categoryChoice < 2 || categoryChoice >= option)
+        {
+            cout << "Invalid category choice.\n";
+            continue;
+        }
+
+        string selectedCategory = categoryOptions[categoryChoice - 2];
+
+        cout << "\nDisplaying products in the category: " << selectedCategory << "\n\n";
+        cout << left << setw(30) << "Name" << setw(17) << "Price" << setw(15) << "Quantity"
+             << "Category" << endl;
+        cout << endl;
+
+        current = inventory.getHead();
+        bool found = false;
+        while (current != nullptr)
+        {
+            if (current->product.category == selectedCategory)
+            {
+                current->print();
+                found = true;
+            }
+            current = current->getNext();
+        }
+
+        if (!found)
+            cout << "No products found in the category: " << selectedCategory << endl;
+
+        cout << endl;
     }
-
-    if (!found)
-        cout << "No products found in the category: " << category << endl;
-
-    cout << endl;
 }
 
 void filterExpiredProducts(Inventory &inventory)
@@ -438,11 +510,12 @@ void filterExpiredProducts(Inventory &inventory)
             }
             else
             {
-                outFile << "Name,Price,Quantity,Category,Expiration Date" << endl;
+                outFile << "Name,Price,Cost,Quantity,Category,Expiration Date" << endl;
                 for (const auto &product : expiredProducts)
                 {
                     outFile << product.name << ","
                             << product.price << ","
+                            << product.cost << ","
                             << product.quantity << ","
                             << product.category << ","
                             << product.expDate << endl;
@@ -476,17 +549,86 @@ void filterExpiredProducts(Inventory &inventory)
 int getMenuChoice()
 {
     int choice;
-    cout << "Enter your choice (1-10): ";
+    cout << "Enter your choice: ";
     cin >> choice;
     cout << "\n";
     return choice;
 }
 
-void getProductDetails(string &name, double &price, int &quantity, string &category, string &expDate)
+double getInvestmentAmount()
+{
+    double amount;
+    cout << "Enter your investment amount in dollars: $";
+    cin >> amount;
+    cout << "\n";
+    return amount;
+}
+
+void runSaleManager()
+{
+    cout << "Starting Sale Manager...\n";
+    //  the Sale Manager functionality here
+}
+void readInventoryFromFile(Inventory &inventory, const string &filename);
+void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory);
+void addProduct(Inventory &inventory);
+void deleteProduct(Inventory &inventory);
+void updatePrice(Inventory &inventory);
+void updateQuantity(Inventory &inventory);
+void searchProduct(Inventory &inventory);
+
+void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory)
 {
     cout << "Enter product name: ";
     cin.ignore();
     getline(cin, name);
+
+    // Capitalize first letter of each word after a space
+    for (size_t i = 0; i < name.length(); i++)
+    {
+        if (i == 0 || name[i - 1] == ' ')
+        {
+            name[i] = toupper(name[i]);
+        }
+        else
+        {
+            name[i] = tolower(name[i]);
+        }
+    }
+
+    // Checking for duplicate product
+    Node *duplicateProduct = inventory.searchProduct(name);
+    if (duplicateProduct != nullptr)
+    {
+        cout << "Product with the same name already exists:\n";
+        duplicateProduct->print();
+        cout << "Do you want to edit this product? (Y/N): ";
+        char editChoice;
+        cin >> editChoice;
+        if (tolower(editChoice) == 'y')
+        {
+            cout << "Enter product price: ";
+            cin >> price;
+            cout << "Enter product quantity: ";
+            cin >> quantity;
+            cout << "Enter product category: ";
+            cin.ignore();
+            getline(cin, category);
+
+            // Only ask for expiration date if the category is "Fruit" or "Beverage"
+            if (category == "Fruit" || category == "Beverage")
+            {
+                cout << "Enter product expiration date (YYYY-MM-DD): ";
+                cin >> expDate;
+            }
+            else
+            {
+                expDate = "";
+            }
+            return;
+        }
+    }
+
     cout << "Enter product price: ";
     cin >> price;
     cout << "Enter product quantity: ";
@@ -494,17 +636,45 @@ void getProductDetails(string &name, double &price, int &quantity, string &categ
     cout << "Enter product category: ";
     cin.ignore();
     getline(cin, category);
-    cout << "Enter product expiration date (YYYY-MM-DD): ";
-    cin >> expDate;
+
+    // Only ask for expiration date if the category is "Fruit" or "Beverage"
+    if (category == "Fruit" || category == "Beverage")
+    {
+        cout << "Enter product expiration date (YYYY-MM-DD): ";
+        cin >> expDate;
+    }
+    else
+    {
+        expDate = "";
+    }
 }
 
 void addProduct(Inventory &inventory)
 {
     string name, category, expDate;
-    double price;
+    double price, cost;
     int quantity;
-    getProductDetails(name, price, quantity, category, expDate);
-    inventory.addProduct(name, price, quantity, category, expDate);
+    getProductDetails(name, price, cost, quantity, category, expDate, inventory);
+
+    Node *existingProduct = inventory.searchProduct(name);
+    if (existingProduct != nullptr)
+    {
+        // Update existing product
+        existingProduct->product.price = price;
+        existingProduct->product.cost = cost;
+        existingProduct->product.quantity = quantity;
+        existingProduct->product.category = category;
+        existingProduct->product.expDate = expDate;
+
+        cout << "The product '" << name << "' details have been updated.\n";
+        existingProduct->print();
+    }
+    else
+    {
+        // Add new product
+        inventory.addProduct(name, price, cost, quantity, category, expDate);
+        cout << "The product '" << name << "' has been added to the inventory.\n";
+    }
 }
 
 void deleteProduct(Inventory &inventory)
@@ -596,6 +766,16 @@ void updateQuantity(Inventory &inventory)
 
 void readInventoryFromFile(Inventory &inventory, const string &filename)
 {
+
+    // Get the current directory path
+    filesystem::path currentPath = filesystem::current_path();
+
+    // Go back to the parent directory (main folder)
+    filesystem::path parentPath = currentPath.parent_path();
+
+    // Combine the parent directory path with the filename
+    filesystem::path filePath = parentPath / filename;
+
     ifstream inFile(filename);
     if (!inFile)
     {
@@ -609,29 +789,75 @@ void readInventoryFromFile(Inventory &inventory, const string &filename)
     while (getline(inFile, line))
     {
         stringstream ss(line);
-        string name, priceStr, quantityStr, category, expDate;
+        string name, priceStr, costStr, quantityStr, category, expDate;
         getline(ss, name, ',');
         getline(ss, priceStr, ',');
+        getline(ss, costStr, ',');
         getline(ss, quantityStr, ',');
         getline(ss, category, ',');
         getline(ss, expDate, ',');
 
         double price = stod(priceStr);
+        double cost = stod(costStr);
         int quantity = stoi(quantityStr);
 
-        inventory.addProduct(name, price, quantity, category, expDate);
+        inventory.addProduct(name, price, cost, quantity, category, expDate);
     }
 
     inFile.close();
 }
 
-int main()
+void printWelcomeScreen()
+{
+    // Get the current date
+    auto now = chrono::system_clock::now();
+    time_t currentTime = chrono::system_clock::to_time_t(now);
+    string date = ctime(&currentTime);
+
+    // Display the welcome screen with the current date
+    cout << "********************************************\n";
+    cout << "*       Welcome to Supermarket System       *\n";
+    cout << "********************************************\n";
+    cout << "Today's Date: " << date;
+    cout << "********************************************\n\n";
+}
+void printMainMenu()
+{
+    cout << "Please select an option:\n";
+    cout << "1. Sale Manager\n";
+    cout << "2. Inventory Manager\n";
+    cout << "3. Check Shipments\n";
+    cout << "0. Quit\n";
+}
+
+void printMenu()
 {
     cout << "Welcome to Supermarket Inventory Manager\n\n";
+    cout << "1. Display inventory\n";
+    cout << "2. Add product\n";
+    cout << "3. Remove product\n";
+    cout << "4. Update price\n";
+    cout << "5. Update quantity\n";
+    cout << "6. Search product\n";
+    cout << "7. Sort the inventory\n";
+    cout << "8. Write inventory to file\n";
+    cout << "9. Filter expired Products and export to file\n";
+    cout << "0. Back to Main Menu\n";
+}
 
+void printSortMenu()
+{
+    cout << "Sorting Options:\n";
+    cout << "1. Sort inventory by category\n";
+    cout << "2. Sort the inventory by expiration date\n";
+    cout << "3. Shuffle inventory\n";
+    cout << "0. Go back to the previous menu\n";
+}
+void runInventoryManager()
+{
+    cout << "Starting Inventory Manager...\n\n";
     Inventory inventory;
     readInventoryFromFile(inventory, "database.csv");
-
     int choice;
     do
     {
@@ -643,8 +869,7 @@ int main()
         {
         case 1:
             cout << "Displaying Inventory\n";
-            inventory.displayProducts();
-            cout << endl;
+            displayProductsByCategoryMenu(inventory);
             break;
         case 2:
             cout << "Adding Product\n";
@@ -664,23 +889,35 @@ int main()
             searchProduct(inventory);
             break;
         case 7:
-            printCategoryMenu();
-            choice = getMenuChoice();
-            if (choice == 0)
+            printSortMenu();
+            int sortChoice;
+            cout << "Enter your choice: ";
+            cin >> sortChoice;
+            cout << endl;
+
+            switch (sortChoice)
             {
+            case 1:
+                inventory.sortByCategory();
+                cout << "Inventory sorted by category.\n\n";
                 break;
-            }
-            else
-            {
-                displayProductsByCategory(choice, inventory);
+            case 2:
+                inventory.sortByExpirationDate();
+                cout << "Inventory sorted by expiration date.\n\n";
+                break;
+            case 3:
+                inventory.shuffleProducts();
+                cout << "Inventory shuffled.\n\n";
+                break;
+            case 0:
+                cout << "Going back to the previous menu.\n\n";
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n\n";
+                break;
             }
             break;
         case 8:
-            cout << "Shuffling Products\n";
-            inventory.shuffleProducts();
-            cout << "Products shuffled.\n";
-            break;
-        case 9:
             cout << "Writing Inventory to File\n";
             cout << "Enter the filename to write the inventory to: ";
             cin >> filename;
@@ -688,13 +925,188 @@ int main()
             inventory.writeInventoryToFile(filename);
             cout << endl;
             break;
-        case 10:
+        case 9:
             cout << "Filtering Expired Products\n";
             filterExpiredProducts(inventory);
             break;
-
         case 0:
-            cout << "Quitting Program\n";
+            cout << "Exiting Inventory Manager\n";
+            break;
+        default:
+            cout << "Invalid choice. Try again.\n";
+            break;
+        }
+    } while (choice != 0);
+}
+void checkShipments(double &investmentAmount, Inventory &purchasedShipments)
+{
+    cout << "Checking Shipments...\n";
+
+    // Specify the directory path
+    string directory = "shipments/"; // Update with your desired directory
+
+    // Check if the directory exists
+    if (!filesystem::exists(directory))
+    {
+        cout << "Directory does not exist: " << directory << endl;
+        return;
+    }
+
+    // Create a vector to store file paths
+    vector<string> fileList;
+
+    // Iterate over files in the directory
+    for (const auto &entry : filesystem::directory_iterator(directory))
+    {
+        // Check if the entry is a file
+        if (entry.is_regular_file())
+        {
+            fileList.push_back(entry.path().filename().string());
+        }
+    }
+
+    // Display the list of files
+    if (fileList.empty())
+    {
+        cout << "No shipments found.\n";
+        return;
+    }
+
+    cout << "List of Shipments:\n";
+    int option = 1;
+    for (const auto &file : fileList)
+    {
+        cout << option << ". " << file << endl;
+        option++;
+    }
+
+    // Get the user's choice
+    size_t choice;
+
+    cout << "Enter the number of the shipment to check: ";
+    cin >> choice;
+
+    if (choice < 1 || choice > fileList.size())
+    {
+        cout << "Invalid choice.\n";
+        return;
+    }
+
+    string selectedFile = directory + fileList[choice - 1];
+
+    // Read the selected file and display the products
+    Inventory shipmentInventory;
+    readInventoryFromFile(shipmentInventory, selectedFile);
+
+    cout << "\nProducts in shipment file '" << fileList[choice - 1] << "':\n";
+    shipmentInventory.displayProducts();
+
+    // Calculate total number of products, total quantity, and total cost
+    int totalProducts = 0;
+    int totalQuantity = 0;
+    double totalCost = 0.0;
+
+    Node *current = shipmentInventory.getHead();
+    while (current != nullptr)
+    {
+        totalProducts++;
+        totalQuantity += current->product.quantity;
+        totalCost += current->product.cost * current->product.quantity;
+        current = current->getNext();
+    }
+
+    cout << "\nTotal number of products: " << totalProducts << endl;
+    cout << "Total quantity of products: " << totalQuantity << endl;
+    cout << "Total cost of products: $" << totalCost << endl;
+
+    // Compare the total cost with the investment amount
+    if (totalCost <= investmentAmount)
+    {
+        cout << "\nDo you want to purchase the shipment? (Y/N): ";
+        char purchaseChoice;
+        cin >> purchaseChoice;
+
+        if (tolower(purchaseChoice) == 'y')
+        {
+            // Append the purchased shipment to the existing database.csv file
+            ofstream outFile("database.csv", ios::app); // Open the file in append mode
+
+            if (!outFile)
+            {
+                cout << "Unable to open file database.csv for appending.\n";
+                return;
+            }
+
+            for (current = shipmentInventory.getHead(); current != nullptr; current = current->getNext())
+            {
+                Product product = current->product;
+                outFile << product.name << ","
+                        << product.price << ","
+                        << product.cost << ","
+                        << product.quantity << ","
+                        << product.category << ","
+                        << product.expDate << endl;
+            }
+
+            outFile.close();
+
+            // Add the purchased shipment to the inventory
+            purchasedShipments.addProduct(fileList[choice - 1], totalCost, totalCost, totalQuantity, "Shipment", "");
+
+            cout << "\nCongratulations! The store has successfully purchased the shipment '" << fileList[choice - 1] << "'.\n";
+            cout << "The total cost of the shipment has been deducted from the investment amount.\n";
+
+            // Subtract the total cost of the shipment from the investment amount
+            investmentAmount -= totalCost;
+            cout << "Remaining investment amount: $" << investmentAmount << endl;
+            // Delete the chosen file
+            string filePathToDelete = directory + fileList[choice - 1];
+            if (remove(filePathToDelete.c_str()) != 0)
+            {
+                cout << "Error deleting file: " << filePathToDelete << endl;
+            }
+            else
+            {
+                cout << "The file '" << fileList[choice - 1] << "' has been successfully deleted.\n";
+            }
+        }
+        else
+        {
+            cout << "\nThe shipment has not been purchased.\n";
+        }
+    }
+    else
+    {
+        cout << "\nThe total cost of the shipment is higher than the investment amount.\n";
+        cout << "The shipment cannot be purchased at this time.\n";
+    }
+}
+
+int main()
+{
+    printWelcomeScreen();
+    double investmentAmount = getInvestmentAmount();
+    int choice;
+    Inventory purchasedShipments;
+
+    do
+    {
+        printMainMenu();
+        choice = getMenuChoice();
+
+        switch (choice)
+        {
+        case 1:
+            runSaleManager();
+            break;
+        case 2:
+            runInventoryManager();
+            break;
+        case 3:
+            checkShipments(investmentAmount, purchasedShipments);
+            break;
+        case 0:
+            cout << "Quitting Program...\n";
             break;
         default:
             cout << "Invalid choice. Try again.\n";
