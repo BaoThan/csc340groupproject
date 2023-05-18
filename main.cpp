@@ -31,7 +31,7 @@ public:
         category = "";
         expDate = "N/A";
     }
-
+    // I just add cost to keep track of our input cost and maybe to calculate sales and profit later
     Product(string name, double price, double cost, int quantity, string category, string expDate)
     {
         this->name = name;
@@ -68,7 +68,7 @@ public:
         else
             return false;
     }
-
+    // took me hour to align these items to look nice
     void print() const
     {
         cout << left << setw(30) << name;
@@ -166,7 +166,7 @@ public:
         outFile.close();
         cout << "Inventory written to file: " << filename << endl;
     }
-
+    // this here to test the sort algorithm
     void shuffleProducts()
     {
         if (head == nullptr || head == tail)
@@ -569,13 +569,13 @@ void runSaleManager()
     cout << "Starting Sale Manager...\n";
     //  the Sale Manager functionality here
 }
-void readInventoryFromFile(Inventory &inventory, const string &filename);
-void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory);
-void addProduct(Inventory &inventory);
-void deleteProduct(Inventory &inventory);
-void updatePrice(Inventory &inventory);
-void updateQuantity(Inventory &inventory);
-void searchProduct(Inventory &inventory);
+// void readInventoryFromFile(Inventory &inventory, const string &filename);
+// void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory);
+// void addProduct(Inventory &inventory);
+// void deleteProduct(Inventory &inventory);
+// void updatePrice(Inventory &inventory);
+// void updateQuantity(Inventory &inventory);
+// void searchProduct(Inventory &inventory);
 
 void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory)
 {
@@ -637,8 +637,8 @@ void getProductDetails(string &name, double &price, double &cost, int &quantity,
     cin.ignore();
     getline(cin, category);
 
-    // Only ask for expiration date if the category is "Fruit" or "Beverage"
-    if (category == "Fruit" || category == "Beverage")
+    // Only ask for expiration date if the category is in these, idk how to dynamicly change this so just harded code this
+    if (category == "Fruit" || category == "Beverage" || category == "Milks" || category == "Eggs")
     {
         cout << "Enter product expiration date (YYYY-MM-DD): ";
         cin >> expDate;
@@ -703,7 +703,7 @@ void searchProduct(Inventory &inventory)
     cin.ignore();
     getline(cin, searchName);
 
-    // Auto-capitalize first letter
+    // Auto-capitalize first letter for convenient
     if (!searchName.empty())
     {
         searchName[0] = toupper(searchName[0]);
@@ -766,8 +766,8 @@ void updateQuantity(Inventory &inventory)
 
 void readInventoryFromFile(Inventory &inventory, const string &filename)
 {
-
-    // Get the current directory path
+    // I think we dont need this?
+    //  Get the current directory path
     filesystem::path currentPath = filesystem::current_path();
 
     // Go back to the parent directory (main folder)
@@ -1029,12 +1029,22 @@ void checkShipments(double &investmentAmount, Inventory &purchasedShipments)
         if (tolower(purchaseChoice) == 'y')
         {
             // Append the purchased shipment to the existing database.csv file
-            ofstream outFile("database.csv", ios::app); // Open the file in append mode
+            ofstream outFile("database.csv", ios::app);
 
             if (!outFile)
             {
                 cout << "Unable to open file database.csv for appending.\n";
                 return;
+            }
+
+            // Check if the file is empty
+            outFile.seekp(0, ios::end);
+            bool isEmpty = outFile.tellp() == 0;
+
+            // If the file is empty, write the header first
+            if (isEmpty)
+            {
+                outFile << "Name,Price,Cost,Quantity,Category,Expiration Date\n";
             }
 
             for (current = shipmentInventory.getHead(); current != nullptr; current = current->getNext())
