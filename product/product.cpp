@@ -11,7 +11,7 @@ using namespace std;
 bool Product::isExpired()
 {
     struct tm _;
-    if (!strptime(expDate.c_str(), "%Y-%m-%d", &_)) return false;
+    if (!strptime(_expDate.c_str(), "%Y-%m-%d", &_)) return false;
 
     // Get the current date
     time_t t = time(0);
@@ -22,7 +22,7 @@ bool Product::isExpired()
 
     // Parse the expiration date
     int expYear, expMonth, expDay;
-    sscanf(expDate.c_str(), "%d-%d-%d", &expYear, &expMonth, &expDay);
+    sscanf(_expDate.c_str(), "%d-%d-%d", &expYear, &expMonth, &expDay);
 
     // Compare the dates
     if (expYear < currentYear)
@@ -37,9 +37,9 @@ bool Product::isExpired()
 
 void Product::print() const
 {
-    cout << left << setw(30) << name;
-    cout << right << setw(5) << fixed << setprecision(2) << "$ " << left << setw(15) << price;
-    cout << left << setw(10) << quantity;
-    cout << right << setw(10) << category << endl;
-    cout << right << setw(15) << expDate << endl;
+    cout << left << setw(30) << _name;
+    cout << right << setw(5) << fixed << setprecision(2) << "$ " << left << setw(15) << _price;
+    cout << left << setw(10) << _quantity;
+    cout << right << setw(10) << _category << endl;
+    cout << right << setw(15) << _expDate << endl;
 }

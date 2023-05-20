@@ -24,12 +24,12 @@ void Inventory::writeInventoryToFile(const string &filename)
     while (current != nullptr)
     {
         Product product = current->product;
-        outFile << product.name << ","
-                << product.price << ","
-                << product.cost << ","
-                << product.quantity << ","
-                << product.category << ","
-                << product.expDate << endl;
+        outFile << product.name() << ","
+                << product.price() << ","
+                << product.cost() << ","
+                << product.quantity() << ","
+                << product.category() << ","
+                << product.expDate() << endl;
         current = current->getNext();
     }
 
@@ -150,11 +150,11 @@ Node* Inventory::searchProduct(string name)
         return nullptr;
 
     Node *current = head;
-    while (current->getNext() != nullptr && current->product.name != name)
+    while (current->getNext() != nullptr && current->product.name() != name)
     {
         current = current->getNext();
     }
-    if (current->product.name == name)
+    if (current->product.name() == name)
         return current;
     else
         return nullptr;
@@ -162,12 +162,12 @@ Node* Inventory::searchProduct(string name)
 
 void Inventory::updatePrice(Node *changeNode, double newPrice)
 {
-    changeNode->product.price = newPrice;
+    changeNode->product.setPrice(newPrice);
 }
 
 void Inventory::updateQuantity(Node *changeNode, int newQuantity)
 {
-    changeNode->product.quantity = newQuantity;
+    changeNode->product.setQuantity(newQuantity);
 }
 
 void Inventory::sortByCategory()
@@ -188,7 +188,7 @@ void Inventory::sortByCategory()
 
         while (current->next != last)
         {
-            if (current->product.category > current->next->product.category)
+            if (current->product.category() > current->next->product.category())
             {
                 swapNodes(current, current->next);
                 sorted = false;
@@ -219,8 +219,9 @@ void Inventory::sortByExpirationDate()
 
         while (current->next != last)
         {
-            if (current->product.expDate != "N/A" && current->next->product.expDate != "N/A" &&
-                compareExpirationDate(current->product.expDate, current->next->product.expDate) > 0)
+            if (current->product.expDate() != "N/A" &&
+                current->next->product.expDate() != "N/A" &&
+                compareExpirationDate(current->product.expDate(), current->next->product.expDate()) > 0)
             {
                 swapNodes(current, current->next);
                 sorted = false;
@@ -236,7 +237,7 @@ void Inventory::sortByExpirationDate()
     cout << "\nSorted Products with Expiration Date:\n";
     for (current = head; current != nullptr; current = current->getNext())
     {
-        if (current->product.expDate != "")
+        if (current->product.expDate() != "")
         {
             current->print();
         }

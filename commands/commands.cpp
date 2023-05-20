@@ -178,8 +178,8 @@ void checkShipments(double &investmentAmount, Inventory &purchasedShipments)
     while (current != nullptr)
     {
         totalProducts++;
-        totalQuantity += current->product.quantity;
-        totalCost += current->product.cost * current->product.quantity;
+        totalQuantity += current->product.quantity();
+        totalCost += current->product.cost() * current->product.quantity();
         current = current->getNext();
     }
 
@@ -218,12 +218,12 @@ void checkShipments(double &investmentAmount, Inventory &purchasedShipments)
             for (current = shipmentInventory.getHead(); current != nullptr; current = current->getNext())
             {
                 Product product = current->product;
-                outFile << product.name << ","
-                        << product.price << ","
-                        << product.cost << ","
-                        << product.quantity << ","
-                        << product.category << ","
-                        << product.expDate << endl;
+                outFile << product.name() << ","
+                        << product.price() << ","
+                        << product.cost() << ","
+                        << product.quantity() << ","
+                        << product.category() << ","
+                        << product.expDate() << endl;
             }
 
             outFile.close();

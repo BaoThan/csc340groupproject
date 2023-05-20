@@ -192,12 +192,12 @@ void filterExpiredProducts(Inventory &inventory)
                 outFile << "Name,Price,Cost,Quantity,Category,Expiration Date" << endl;
                 for (const auto &product : expiredProducts)
                 {
-                    outFile << product.name << ","
-                            << product.price << ","
-                            << product.cost << ","
-                            << product.quantity << ","
-                            << product.category << ","
-                            << product.expDate << endl;
+                    outFile << product.name() << ","
+                            << product.price() << ","
+                            << product.cost() << ","
+                            << product.quantity() << ","
+                            << product.category() << ","
+                            << product.expDate() << endl;
                 }
                 outFile.close();
 
@@ -212,7 +212,7 @@ void filterExpiredProducts(Inventory &inventory)
         {
             for (const auto &product : expiredProducts)
             {
-                Node *expiredNode = inventory.searchProduct(product.name);
+                Node *expiredNode = inventory.searchProduct(product.name());
                 if (expiredNode != nullptr)
                 {
                     inventory.deleteProduct(expiredNode);
@@ -237,7 +237,7 @@ void displayProductsByCategoryMenu(Inventory &inventory)
         Node *current = inventory.getHead();
         while (current != nullptr)
         {
-            categories.insert(current->product.category);
+            categories.insert(current->product.category());
             current = current->getNext();
         }
 
@@ -280,7 +280,7 @@ void displayProductsByCategoryMenu(Inventory &inventory)
         bool found = false;
         while (current != nullptr)
         {
-            if (current->product.category == selectedCategory)
+            if (current->product.category() == selectedCategory)
             {
                 current->print();
                 found = true;
@@ -327,11 +327,11 @@ void addProduct(Inventory &inventory)
     if (existingProduct != nullptr)
     {
         // Update existing product
-        existingProduct->product.price = price;
-        existingProduct->product.cost = cost;
-        existingProduct->product.quantity = quantity;
-        existingProduct->product.category = category;
-        existingProduct->product.expDate = expDate;
+        existingProduct->product.setPrice(price);
+        existingProduct->product.setCost(cost);
+        existingProduct->product.setQuantity(quantity);
+        existingProduct->product.setCategory(category);
+        existingProduct->product.setExpDate(expDate);
 
         cout << "The product '" << name << "' details have been updated.\n";
         existingProduct->print();
