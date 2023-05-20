@@ -10,7 +10,22 @@
 #include <chrono>
 #include <unordered_set>
 #include <vector>
-#include <filesystem>
+
+#ifndef __has_include
+static_assert(false, "__has_include not supported");
+#else
+#  if __cplusplus >= 201703L && __has_include(<filesystem>)
+#    include <filesystem>
+namespace fs = std::filesystem;
+#  elif __has_include(<experimental/filesystem>)
+#    include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#  elif __has_include(<boost/filesystem.hpp>)
+#    include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#  endif
+#endif
+
 using namespace std;
 
 class Product
@@ -768,13 +783,13 @@ void readInventoryFromFile(Inventory &inventory, const string &filename)
 {
     // I think we dont need this?
     //  Get the current directory path
-    filesystem::path currentPath = filesystem::current_path();
+    fs::path currentPath = fs::current_path();
 
     // Go back to the parent directory (main folder)
-    filesystem::path parentPath = currentPath.parent_path();
+    fs::path parentPath = currentPath.parent_path();
 
     // Combine the parent directory path with the filename
-    filesystem::path filePath = parentPath / filename;
+    fs::path filePath = parentPath / filename;
 
     ifstream inFile(filename);
     if (!inFile)
@@ -946,7 +961,7 @@ void checkShipments(double &investmentAmount, Inventory &purchasedShipments)
     string directory = "shipments/"; // Update with your desired directory
 
     // Check if the directory exists
-    if (!filesystem::exists(directory))
+    if (!fs::exists(directory))
     {
         cout << "Directory does not exist: " << directory << endl;
         return;
@@ -956,7 +971,7 @@ void checkShipments(double &investmentAmount, Inventory &purchasedShipments)
     vector<string> fileList;
 
     // Iterate over files in the directory
-    for (const auto &entry : filesystem::directory_iterator(directory))
+    for (const auto &entry : fs::directory_iterator(directory))
     {
         // Check if the entry is a file
         if (entry.is_regular_file())
