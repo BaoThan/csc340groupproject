@@ -1,22 +1,9 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <iomanip>
-#include <sstream>
-#include <algorithm>
-#include <random>
-#include <cctype>
-#include <ctime>
-#include <chrono>
-#include <unordered_set>
-#include <vector>
-
 #include "commands/commands.hpp"
 #include "inventory/inventory.hpp"
 #include "product/product.hpp"
 #include "utils/utils.hpp"
 
-using namespace std;
+#include <iostream>
 
 
 int main()
@@ -43,7 +30,7 @@ int main()
             checkShipments(investmentAmount, purchasedShipments);
             break;
         case 0:
-            cout << "Quitting Program...\n";
+            std::cout << "Quitting Program...\n";
             break;
         default:
             cout << "Invalid choice. Try again.\n";
