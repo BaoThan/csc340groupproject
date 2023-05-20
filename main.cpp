@@ -59,8 +59,8 @@ public:
 
     bool isExpired()
     {
-        if (expDate == "N/A")
-            return false;
+        struct tm _;
+        if (!strptime(expDate.c_str(), "%Y-%m-%d", &_)) return false;
 
         // Get the current date
         time_t t = time(0);
