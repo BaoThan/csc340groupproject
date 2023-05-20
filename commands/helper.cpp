@@ -3,10 +3,17 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <unordered_set>
 #include <vector>
 
-void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory)
+void getProductDetails(string &name,
+                       double &price,
+                       double &cost,
+                       int &quantity,
+                       string &category,
+                       string &expDate,
+                       Inventory &inventory)
 {
     cout << "Enter product name: ";
     cin.ignore();
