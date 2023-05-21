@@ -12,13 +12,6 @@ void runSaleManager()
     cout << "Starting Sale Manager...\n";
     //  the Sale Manager functionality here
 }
-// void readInventoryFromFile(Inventory &inventory, const string &filename);
-// void getProductDetails(string &name, double &price, double &cost, int &quantity, string &category, string &expDate, Inventory &inventory);
-// void addProduct(Inventory &inventory);
-// void deleteProduct(Inventory &inventory);
-// void updatePrice(Inventory &inventory);
-// void updateQuantity(Inventory &inventory);
-// void searchProduct(Inventory &inventory);
 
 void runInventoryManager()
 {
